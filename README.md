@@ -1,35 +1,12 @@
-English | [简体中文](./README_ZH.md) | [日本語](./TRANSLATIONS.md) | [Tiếng Việt](./TRANSLATIONS.md) | [Hindi](./TRANSLATIONS.md) | [Spanish](./TRANSLATIONS.md) | [French](./TRANSLATIONS.md) | [German](./TRANSLATIONS.md) | [Farsi](./TRANSLATIONS.md) | [Turkish](./TRANSLATIONS.md) | [Thai](./TRANSLATIONS.md) | [繁體中文](./README_ZH_hk.md) | [Catalan](./TRANSLATIONS.md)
-
-![OpenWork banner](./.github/assets/github-banner.png)
-
-> OpenWork is an AI coworker for you an your team. It helps you run your agents, skills, and MCPs. It's an open-source alternative to Claude Cowork/Codex (desktop app).
-
-<div align="center">
-   <p align="center">
-    <a href="https://openwork.software/docs"><img src="https://img.shields.io/badge/openwork.software%2Fdocs-orange" alt="Docs"></a>
-    <a href="https://discord.gg/VEhNQXxYMB"><img src="https://img.shields.io/badge/discord-join-5865F2?logo=discord&logoColor=white" alt="Discord"></a>
-    <a href="https://github.com/different-ai/openwork/"><img src="https://img.shields.io/github/stars/different-ai/openwork" alt="Github Stars"></a>
-    <a href="https://github.com/different-ai/openwork/pulse"><img src="https://img.shields.io/github/commit-activity/w/different-ai/openwork" alt="Commits-per-week"></a>
-    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT"></a>
-  </p>
-   <br />
-   <div>
-      <a href="https://openworklabs.com/docs"><strong>Docs</strong></a> ·
-      <a href="https://github.com/different-ai/openwork/issues/new?template=bug.yml"><strong>Report Bug</strong></a> |
-      <a href="https://github.com/different-ai/openwork/issues/new?template=feature.yml"><strong>Request a Feature</strong></a> |
-      <a href="https://discord.gg/VEhNQXxYMB"><strong>Join Discord</strong></a> |
-      <a href="https://openworklabs.com/download"><strong>Download App</strong></a>
-   </div>
-</div>
-
+> OpenWork is the open source alternative to Claude Cowork/Codex (desktop app).
 
 
 ## Core Philosophy
 
 - Local-first, cloud-ready: OpenWork runs on your machine in one click. Send a message instantly.
-- Composable: desktop app, WhatsApp/Slack/Telegram connector, or server. Use what fits, no lock-in.
+- Composable: desktop app, Slack/Telegram connector, or server. Use what fits, no lock-in.
 - Ejectable: OpenWork is powered by OpenCode, so everything OpenCode can do works in OpenWork, even without a UI yet.
-- Sharing is caring: start solo, then share. One CLI or desktop command spins up an instantly shareable instance.
+- Sharing is caring: start solo on localhost, then explicitly opt into remote sharing when you need it.
 
 <p align="center">
   <img src="./app-demo.gif" alt="OpenWork demo" width="800" />
@@ -41,11 +18,15 @@ OpenWork is designed around the idea that you can easily ship your agentic workf
 - **OpenWork Orchestrator (CLI host)**: run OpenCode + OpenWork server without the desktop UI.
   - install: `npm install -g openwork-orchestrator`
   - run: `openwork start --workspace /path/to/workspace --approval auto`
-  - docs: [packages/orchestrator/README.md](./packages/orchestrator/README.md)
+  - docs: [apps/orchestrator/README.md](./apps/orchestrator/README.md)
 
 ## Quick start
 
-Download the correct version in [here](https://openworklabs.com/download), in the latest [releases](https://github.com/different-ai/openwork/releases) or install from source below.
+Download the desktop app from [openworklabs.com/download](https://openworklabs.com/download), grab the latest [GitHub release](https://github.com/different-ai/openwork/releases), or install from source below.
+
+- macOS and Linux downloads are available directly.
+- Windows access is currently handled through the paid support plan on [openworklabs.com/pricing#windows-support](https://openworklabs.com/pricing#windows-support).
+- Hosted OpenWork Cloud workers are launched from the web app after checkout, then connected from the desktop app via `Add a worker` -> `Connect remote`.
 
 ## Why
 
@@ -67,9 +48,9 @@ OpenWork is designed to be:
 - **Execution plan**: render OpenCode todos as a timeline.
 - **Permissions**: surface permission requests and reply (allow once / always / deny).
 - **Templates**: save and re-run common workflows (stored locally).
+- **Debug exports**: copy or export the runtime debug report and developer log stream from Settings -> Debug when you need to file a bug.
 - **Skills manager**:
   - list installed `.opencode/skills` folders
-  - install from OpenPackage (`opkg install ...`)
   - import a local skill folder into `.opencode/skills/<skill-name>`
 
 ## Skill Manager
@@ -110,7 +91,7 @@ pnpm install --frozen-lockfile
 
 which bun
 bun --version
-pnpm --filter @different-ai/openwork exec tauri --version
+pnpm --filter @openwork/desktop exec tauri --version
 ```
 
 ### Install
@@ -119,7 +100,7 @@ pnpm --filter @different-ai/openwork exec tauri --version
 pnpm install
 ```
 
-OpenWork now lives in `packages/app` (UI) and `packages/desktop` (desktop shell).
+OpenWork now lives in `apps/app` (UI) and `apps/desktop` (desktop shell).
 
 ### Run (Desktop)
 
@@ -141,7 +122,7 @@ All repo `dev` entrypoints now opt into the same dev-mode isolation so local tes
 
 ```bash
 sudo pacman -S --needed webkit2gtk-4.1
-yay -s opencode # Releases version
+curl -fsSL https://opencode.ai/install | bash -s -- --version "$(node -e "const fs=require('fs'); const parsed=JSON.parse(fs.readFileSync('constants.json','utf8')); process.stdout.write(String(parsed.opencodeVersion||'').trim().replace(/^v/,''));")" --no-modify-path
 ```
 
 ## Architecture (high-level)
@@ -165,15 +146,7 @@ This lets you run agentic workflows, send prompts, and see progress entirely on 
 The folder picker uses the Tauri dialog plugin.
 Capability permissions are defined in:
 
-- `packages/desktop/src-tauri/capabilities/default.json`
-
-## OpenPackage Notes
-
-If `opkg` is not installed globally, OpenWork falls back to:
-
-```bash
-pnpm dlx opkg install <package>
-```
+- `apps/desktop/src-tauri/capabilities/default.json`
 
 ## OpenCode Plugins
 
@@ -205,6 +178,8 @@ pnpm test:e2e
 
 ## Troubleshooting
 
+If you need to report a desktop or session bug, open Settings -> Debug and export both the runtime debug report and developer logs before filing an issue.
+
 ### Linux / Wayland (Hyprland)
 
 If OpenWork crashes on launch with WebKitGTK errors like `Failed to create GBM buffer`, disable dmabuf or compositing before launch. Try one of the following environment flags.
@@ -229,7 +204,7 @@ WEBKIT_DISABLE_COMPOSITING_MODE=1 openwork
 - Run `pnpm install` once per checkout, then verify your change with `pnpm typecheck` plus `pnpm test:e2e` (or the targeted subset of scripts) before opening a PR.
 - Use `.github/pull_request_template.md` when opening PRs and include exact commands, outcomes, manual verification steps, and evidence.
 - If CI fails, classify failures in the PR body as either code-related regressions or external/environment/auth blockers.
-- Add new PRDs to `packages/app/pr/<name>.md` following the `.opencode/skills/prd-conventions/SKILL.md` conventions described in `AGENTS.md`.
+- Add new PRDs to `apps/app/pr/<name>.md` following the `.opencode/skills/prd-conventions/SKILL.md` conventions described in `AGENTS.md`.
 
 Community docs:
 
@@ -245,6 +220,12 @@ First contribution checklist:
 - [ ] Add/update tests for behavioral changes.
 - [ ] Include commands run and outcomes in your PR.
 - [ ] Add screenshots/video for user-facing flow changes.
+
+## Supported Languages
+
+Translated READMEs: [`translated_readmes/`](./translated_readmes/README.md), available in English, 简体中文, 繁體中文, 日本語.
+
+The App is available in the following languages: English (`en`), Japanese (`ja`), Simplified Chinese (`zh`), Vietnamese (`vi`), Brazilian Portuguese (`pt-BR`).
 
 ## For Teams & Businesses
 
